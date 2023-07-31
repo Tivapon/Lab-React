@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import _, { attempt, set } from 'lodash';
 import CharacterCard from "./CharacterCard";
+import { setSelectionRange } from "@testing-library/user-event/dist/utils";
 
 const prepareStateFromeWord = given_word => {
     let word = given_word.toUpperCase()
@@ -12,11 +13,25 @@ const prepareStateFromeWord = given_word => {
         guess: '',
         completed: false
     }
+    
 }
 
 export default function WordCard(props){
 
     const [state, setState] = useState(prepareStateFromeWord(props.value))
+
+    const changeWordOnCorrect = () => {
+        const nextword = "World";
+    
+        setState((prevState) => ({
+            ...prevState,
+            word: nextword.toUpperCase(),
+            chars: _.shuffle(Array.from(nextword.toUpperCase())),
+            guess: " ",
+            completed: false,
+            attempt: prevState.attempt+1
+        }))
+    }
 
     const activationHandler = c => {
         console.log(`${c} has been activated`)
@@ -27,7 +42,8 @@ export default function WordCard(props){
         if(guess.length == state.word.length){
             if(guess == state.word){
                 console.log('yeah!')
-                setState({...state, completed: true})
+                setState({...state, completed: true })
+                changeWordOnCorrect();
             }else{
                  console.log('reset, next attempl')
                  setState({...state, guess: '', attempt: state.attempt + 1})
